@@ -1,12 +1,14 @@
+using DotNetEnv;
 using API;
 using Business;
 using Business.Authentication;
-using Business.Services;
 using Data;
 using Data.Repositories;
 using Domain.Authentication;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+
+Env.Load("../.env");
 
 var builder = WebApplication.CreateBuilder(args);
 
