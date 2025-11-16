@@ -1,6 +1,8 @@
 # Punto de Venta - API
 
 - [Acceso a la API](#url-acceso-a-la-api)
+- [Configuración del Entorno](#configuración-del-entorno)
+- [Base de Datos con Docker](#base-de-datos-con-docker)
 - [Arquitectura por Capas](#arquitectura-por-capas)
    - [Resumen](#resumen)
    - [Diagrama de Arquitectura](#diagrama-de-arquitectura)
@@ -25,6 +27,49 @@
    - Swagger https: [https://localhost:7192/swagger/index.html](https://localhost:7192/swagger/index.html)
 
 El archivo de configuración de acceso a la API se encuentra en `API/Properties/launchSettings.json`.
+
+---
+
+<a name="configuración-del-entorno"></a>
+## Configuración del Entorno
+
+El entorno se configura mediante el archivo `.env` en la raíz del proyecto:
+
+```bash
+# Development | Docker
+DOTNET_ENVIRONMENT=Development
+```
+
+Valores disponibles:
+- `Development`: Entorno de desarrollo local
+- `Docker`: Entorno usando Docker para la base de datos
+
+Copia `.env.example` a `.env` en directorio raíz y ajusta según tu entorno.
+
+---
+
+<a name="base-de-datos-con-docker"></a>
+## Base de Datos con Docker
+
+El proyecto incluye `docker-compose.yml` para ejecutar SQL Server en un contenedor.
+
+### Iniciar la Base de Datos
+
+```bash
+docker-compose up -d
+```
+
+### Detener la Base de Datos
+
+```bash
+docker-compose down
+```
+
+### Configuración
+
+- **Puerto:** 11433
+- **Usuario:** sa
+- **Contraseña:** P@ssw0rd123!
 
 ---
 

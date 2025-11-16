@@ -1,0 +1,16 @@
+
+name: punto-venta-api
+
+services:
+    sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        environment:
+            ACCEPT_EULA: 'Y'
+            MSSQL_SA_PASSWORD: 'P@ssw0rd123!'
+            MSSQL_PID: 'Developer'
+        ports:
+            - '11433:1433'
+        volumes:
+            - mssqldata:/var/opt/mssql
+volumes:
+    mssqldata:

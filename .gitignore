@@ -50,3 +50,6 @@
 
 # Multimedia files
 public/media/
+
+# Environment files
+.env
