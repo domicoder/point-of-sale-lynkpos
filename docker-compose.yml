@@ -23,7 +23,7 @@ services:
             Token__UserScheme__Key: '${JWT_USER_KEY}'
             Token__ExternalAPIScheme__Key: '${JWT_EXTERNAL_KEY}'
             INVENTARIO_API__URL: '${INV_API_URL}'
-            INVENTARIO_API__Credentials__Email: '${INV_API_EMAIL}'
-            INVENTARIO_API__Credentials__Password: '${INV_API_PASSWORD}'
+            INVENTARIO_API__Credential__Email: '${INV_API_EMAIL}'
+            INVENTARIO_API__Credential__Password: '${INV_API_PASSWORD}'
 volumes:
     mssqldata:
