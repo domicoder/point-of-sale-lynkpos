@@ -1,4 +1,3 @@
-
 name: punto-venta-api
 
 services:
@@ -6,11 +5,25 @@ services:
         image: mcr.microsoft.com/mssql/server:2022-latest
         environment:
             ACCEPT_EULA: 'Y'
-            MSSQL_SA_PASSWORD: 'P@ssw0rd123!'
+            MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD}
             MSSQL_PID: 'Developer'
         ports:
             - '11433:1433'
+        env_file:
+            - .env
         volumes:
             - mssqldata:/var/opt/mssql
+    api:
+        build: .
+        env_file:
+            - .env
+        environment:
+            ASPNETCORE_ENVIRONMENT: 'Docker'
+            ConnectionStrings__DefaultConnection: 'Server=${SQL_HOST},${SQL_PORT};Database=${SQL_DB_NAME};User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True;'
+            Token__UserScheme__Key: '${JWT_USER_KEY}'
+            Token__ExternalAPIScheme__Key: '${JWT_EXTERNAL_KEY}'
+            INVENTARIO_API__URL: '${INV_API_URL}'
+            INVENTARIO_API__Credentials__Email: '${INV_API_EMAIL}'
+            INVENTARIO_API__Credentials__Password: '${INV_API_PASSWORD}'
 volumes:
     mssqldata:

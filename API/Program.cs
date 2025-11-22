@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 Env.Load("../.env");
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 var storagePublicPath = builder.Configuration["Storage:PublicPath"];
 

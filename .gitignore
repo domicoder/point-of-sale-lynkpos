@@ -53,3 +53,6 @@ public/media/
 
 # Environment files
 .env
+.env.docker
+.env.production
+.env.development
