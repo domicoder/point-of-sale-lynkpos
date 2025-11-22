@@ -42,8 +42,8 @@ namespace Business.Services.INVENTARIO_API
 
                 var payload = new
                 {
-                    correo = _setting.Credentials.Email,
-                    clave = _setting.Credentials.Password
+                    correo = _setting.Credential.Email,
+                    clave = _setting.Credential.Password
                 };
 
                 using var req = new HttpRequestMessage(HttpMethod.Post, WrapUrl("/internal/auth/login"))
