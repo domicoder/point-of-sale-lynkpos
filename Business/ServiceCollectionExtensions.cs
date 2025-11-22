@@ -55,8 +55,9 @@ namespace Business
                 .AddOptions<InventarioApiSetting>()
                 .Bind(configuration.GetSection("INVENTARIO_API"))
                 .Validate(x => !string.IsNullOrWhiteSpace(x.URL), "INVENTARIO_API:URL is required")
-                .Validate(x => !string.IsNullOrWhiteSpace(x.Credentials.Email), "INVENTARIO_API:Credential:Email is required")
-                .Validate(x => !string.IsNullOrWhiteSpace(x.Credentials.Password), "INVENTARIO_API:Credential:Password is required")
+                .Validate(x => x.Credential is not null, "INVENTARIO_API:Credential is required")
+                .Validate(x => !string.IsNullOrWhiteSpace(x.Credential.Email), "INVENTARIO_API:Credential:Email is required")
+                .Validate(x => !string.IsNullOrWhiteSpace(x.Credential.Password), "INVENTARIO_API:Credential:Password is required")
                 .ValidateOnStart();
 
             services.AddHttpClient<INVENTARIOApiService>((serviceProvider, httpClient) =>

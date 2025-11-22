@@ -4,7 +4,7 @@ namespace Domain.Environment
     public class InventarioApiSetting
     {
         public String URL { get; set; } = "";
-        public ApiCredential Credentials { get; set; } = new();
+        public ApiCredential Credential { get; set; } = new();
 
         public class ApiCredential
         {
