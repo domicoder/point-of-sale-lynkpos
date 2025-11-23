@@ -7,6 +7,7 @@ using Data.Repositories;
 using Domain.Authentication;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 Env.Load("../.env");
 
