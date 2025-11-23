@@ -104,10 +104,20 @@ if (storagePublicPath != null)
     });
 }
 
-using (var scope = app.Services.CreateScope())
+
+try
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+    }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "Error applying migrations at startup. API will continue running.");
+    // IMPORTANTE: no volver a lanzar la excepción
 }
 
 // Configure the HTTP request pipeline.
