@@ -44,19 +44,14 @@ builder.Services.AddCors(options =>
           .AllowAnyHeader()
           .AllowAnyMethod();
 
-        policy.WithOrigins("http://127.0.0.1:5000")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-
-        policy.WithOrigins("http://127.0.0.1:5500")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-
-        policy.WithOrigins("http://localhost:5000")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-
-        policy.WithOrigins("http://localhost:5500")
+        policy.WithOrigins
+            (
+                "http://127.0.0.1:5000",
+                "http://127.0.0.1:5500",
+                "http://localhost:5000",
+                "http://localhost:5500",
+                "https://point-of-sale-lynkpos-production.up.railway.app"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
