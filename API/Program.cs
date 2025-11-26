@@ -51,9 +51,12 @@ builder.Services.AddCors(options =>
                 // Allow localhost and 127.0.0.1 on any port
                 if (host == "localhost" || host == "127.0.0.1")
                     return true;
-                
+
+                var domainFrontend = "https://lynkpos.app";
+                var vercelDomainFrontend = "https://lynkpos-frontend-o303fknwe-domicoder-team.vercel.app";
+
                 // Allow specific production origin
-                if (origin == "https://point-of-sale-lynkpos-production.up.railway.app")
+                if (origin == domainFrontend || origin == vercelDomainFrontend)
                     return true;
                 
                 return false;
