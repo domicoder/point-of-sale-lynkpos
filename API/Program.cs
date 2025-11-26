@@ -53,7 +53,7 @@ builder.Services.AddCors(options =>
                     return true;
 
                 var domainFrontend = "https://lynkpos.app";
-                var vercelDomainFrontend = "https://lynkpos-frontend-o303fknwe-domicoder-team.vercel.app";
+                var vercelDomainFrontend = "https://lynkpos-frontend.vercel.app";
 
                 // Allow specific production origin
                 if (origin == domainFrontend || origin == vercelDomainFrontend)
