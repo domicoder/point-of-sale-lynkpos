@@ -39,21 +39,33 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowLocalHostOrigin", policy =>
     {
         policy.SetIsOriginAllowed(origin =>
-            new Uri(origin).Host == "localhost" ||
-            new Uri(origin).Host == "127.0.0.1")
-          .AllowAnyHeader()
-          .AllowAnyMethod();
-
-        policy.WithOrigins
-            (
-                "http://127.0.0.1:5000",
-                "http://127.0.0.1:5500",
-                "http://localhost:5000",
-                "http://localhost:5500",
-                "https://point-of-sale-lynkpos-production.up.railway.app"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        {
+            if (string.IsNullOrEmpty(origin))
+                return false;
+            
+            try
+            {
+                var uri = new Uri(origin);
+                var host = uri.Host;
+                
+                // Allow localhost and 127.0.0.1 on any port
+                if (host == "localhost" || host == "127.0.0.1")
+                    return true;
+                
+                // Allow specific production origin
+                if (origin == "https://point-of-sale-lynkpos-production.up.railway.app")
+                    return true;
+                
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        })
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
     });
 });
 
@@ -124,9 +136,10 @@ if (app.Environment.IsDevelopment())
         opt.EnablePersistAuthorization();
         opt.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
     });
-
-    app.UseCors("AllowLocalHostOrigin");
 }
+
+// CORS must be enabled before UseHttpsRedirection and UseAuthorization
+app.UseCors("AllowLocalHostOrigin");
 
 app.UseHttpsRedirection();
 
