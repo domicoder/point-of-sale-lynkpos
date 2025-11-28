@@ -10,6 +10,10 @@ namespace Data
         public DbSet<CajaEstadoModel> CajaEstados { get; set; }
         public DbSet<Caja> Cajas { get; set; }
         public DbSet<CajaVitacora> CajaVitacoras { get; set; }
+        public DbSet<TipoFacturaModel> TiposFacturas { get; set; }
+        public DbSet<EstadoFacturaModel> EstadosFacturas { get; set; }
+        public DbSet<Factura> Facturas { get; set; }
+        public DbSet<FacturaDetalle> FacturasDetalles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -130,6 +134,135 @@ namespace Data
                     .HasForeignKey(v => v.UsuarioId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("caja_vitacora_fk_usuario_id");
+            });
+
+            modelBuilder.Entity<TipoFacturaModel>(entity =>
+            {
+                entity.ToTable("tipos_facturas");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id);
+                entity.Property(x => x.Nombre).IsRequired().HasMaxLength(50);
+                entity.Property(x => x.CreadoEn).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.HasData(new TipoFacturaModel
+                {
+                    Id = 1,
+                    Nombre = "DEBITO"
+                });
+
+                entity.HasData(new TipoFacturaModel
+                {
+                    Id = 2,
+                    Nombre = "CREDITO"
+                });
+            });
+
+            modelBuilder.Entity<EstadoFacturaModel>(entity =>
+            {
+                entity.ToTable("estados_facturas");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id);
+                entity.Property(x => x.Nombre).IsRequired().HasMaxLength(50);
+                entity.Property(x => x.CreadoEn).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.HasData(new EstadoFacturaModel
+                {
+                    Id = 1,
+                    Nombre = "EMITIDA"
+                });
+
+                entity.HasData(new EstadoFacturaModel
+                {
+                    Id = 2,
+                    Nombre = "CANCELADA"
+                });
+            });
+
+            modelBuilder.Entity<Factura>(entity =>
+            {
+                entity.ToTable("facturas");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id);
+                entity.Property(x => x.TipoId).IsRequired();
+                entity.Property(x => x.EstadoId).IsRequired();
+                entity.Property(x => x.UsuarioId).IsRequired();
+                entity.Property(x => x.CajaId).IsRequired();
+                entity.Property(x => x.FechaEmision).IsRequired();
+                entity.Property(x => x.Total)
+                    .HasPrecision(12,2)
+                    .HasColumnType("decimal(12,2)")
+                    .IsRequired();
+                entity.Property(x => x.Subtotal)
+                    .HasPrecision(12, 2)
+                    .HasColumnType("decimal(12,2)")
+                    .IsRequired();
+                entity.Property(x => x.Impuestos)
+                    .HasPrecision(12, 2)
+                    .HasColumnType("decimal(12,2)")
+                    .IsRequired();
+                entity.Property(x => x.CreadoEn).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.HasOne(x => x.TipoFactura)
+                      .WithMany(x => x.Facturas)
+                      .HasForeignKey(x => x.TipoId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("facturas_fk_tipo_id");
+
+                entity.HasOne(x => x.EstadoFactura)
+                      .WithMany(x => x.Facturas)
+                      .HasForeignKey(x => x.EstadoId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("facturas_fk_estado_id");
+
+                entity.HasOne(x => x.Usuario)
+                    .WithMany(x => x.Facturas)
+                    .HasForeignKey(v => v.UsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("facturas_fk_usuario_id");
+
+                entity.HasOne(x => x.Caja)
+                      .WithMany(x => x.Facturas)
+                      .HasForeignKey(x => x.CajaId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("facturas_fk_caja_id");
+            });
+
+            modelBuilder.Entity<FacturaDetalle>(entity =>
+            {
+                entity.ToTable("facturas_detalles");
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.Id);
+                entity.Property(x => x.FacturaId).IsRequired();
+                entity.Property(x => x.ProductoId).HasMaxLength(36).IsRequired();
+                entity.Property(x => x.NombreProducto).HasMaxLength(250).IsRequired();
+                entity.Property(x => x.Cantidad).IsRequired();
+                entity.Property(x => x.ImpuestoPorcentaje)
+                    .HasPrecision(4, 2)
+                    .HasColumnType("decimal(4,2)")
+                    .IsRequired();
+                entity.Property(x => x.PrecioUnitario)
+                    .HasPrecision(12, 2)
+                    .HasColumnType("decimal(12,2)")
+                    .IsRequired();
+                entity.Property(x => x.Total)
+                    .HasPrecision(12, 2)
+                    .HasColumnType("decimal(12,2)")
+                    .IsRequired();
+                entity.Property(x => x.Subtotal)
+                    .HasPrecision(12, 2)
+                    .HasColumnType("decimal(12,2)")
+                    .IsRequired();
+                entity.Property(x => x.Impuestos)
+                    .HasPrecision(12, 2)
+                    .HasColumnType("decimal(12,2)")
+                    .IsRequired();
+                entity.Property(x => x.CreadoEn).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.HasOne(x => x.Factura)
+                      .WithOne(x => x.FacturaDetalle)
+                      .HasForeignKey<FacturaDetalle>(x => x.FacturaId)
+                      .OnDelete(DeleteBehavior.Restrict)
+                      .HasConstraintName("facturas_detalles_fk_factura_id");
             });
         }
     }

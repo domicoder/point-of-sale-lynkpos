@@ -12,5 +12,6 @@ namespace Domain.Models
 
         public Rol Rol { get; set; } = default!;
         public ICollection<CajaVitacora> CajaVitacoras { get; set; } = [];
+        public ICollection<Factura> Facturas { get; set; } = [];
     }
 }

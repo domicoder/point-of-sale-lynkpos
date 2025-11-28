@@ -11,5 +11,6 @@ namespace Domain.Models
 
         public CajaEstadoModel CajaEstado { get; set; } = default!;
         public ICollection<CajaVitacora> CajaVitacoras { get; set; } = [];
+        public ICollection<Factura> Facturas { get; set; } = [];
     }
 }
