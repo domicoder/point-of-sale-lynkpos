@@ -1,6 +1,7 @@
 ﻿using Business.Services.INVENTARIO_API;
 using Domain.API;
 using Domain.Controller.Private.Producto;
+using Domain.INVENTARIO_API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -42,6 +43,23 @@ namespace API.Controllers.Private
                     PrecioUnitario = data.PrecioUnitario,
                     Stock = data.Stock
                 }
+            });
+        }
+
+        [HttpGet]
+        [ProducesResponseType<BaseObjectResponse<ICollection<GetProductoByIdResponse>>>(StatusCodes.Status200OK)]
+        [SwaggerOperation(
+              Summary = "Obtener una lista de productos.",
+              Description = "Devuelve una lista de los producto desde inventario."
+          )]
+        public IActionResult GetProductList()
+        {
+            var data = _inventarioApiProductoService.GetProductoListResponse();
+
+            return Ok(new BaseObjectResponse<ICollection<GetProductoByIdResponse>>
+            {
+                Ok = true,
+                Data = data
             });
         }
     }
