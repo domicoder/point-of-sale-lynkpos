@@ -9,6 +9,8 @@ namespace Business.Services.INVENTARIO_API
             return _productos.Find(x => x.ProductoId == id);
         }
 
+        public ICollection<GetProductoByIdResponse> GetProductoListResponse() => _productos;
+
         private readonly List<GetProductoByIdResponse> _productos = [
             new()
             {
