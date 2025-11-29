@@ -12,10 +12,10 @@ namespace Domain.Models
         public required decimal Subtotal { get; set; }
         public required decimal Impuestos { get; set; }
 
-        public required TipoFacturaModel TipoFactura { get; set; }
-        public required EstadoFacturaModel EstadoFactura { get; set; }
-        public required Usuario Usuario { get; set; }
-        public required Caja Caja { get; set; }
-        public required FacturaDetalle FacturaDetalle { get; set; }
+        public TipoFacturaModel TipoFactura { get; set; } = default!;
+        public EstadoFacturaModel EstadoFactura { get; set; } = default!;
+        public Usuario Usuario { get; set; } = default!;
+        public Caja Caja { get; set; } = default!;
+        public ICollection<FacturaDetalle> FacturaDetalle { get; set; } = [];
     }
 }

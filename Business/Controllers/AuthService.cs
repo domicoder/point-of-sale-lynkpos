@@ -1,7 +1,9 @@
-﻿using Business.Authentication;
+﻿using Azure.Core;
+using Business.Authentication;
 using Business.Utils;
 using Data.Repositories;
 using Domain.Controller.Private.Auth;
+using Microsoft.AspNetCore.Http;
 
 namespace Business.Controllers
 {
@@ -33,7 +35,7 @@ namespace Business.Controllers
             return _authService.GenerateUserToken(usuario.Id, usuario.RolId);
         }
 
-        public async Task<GetUserInfoResponse?> GetUserInfoResponse(string token)
+        public async Task<GetUserInfoResponse?> GetUserInfoByToken(string token)
         {
             var tokenInfo = _authService.GetTokenUserInfo(token);
 
@@ -43,7 +45,8 @@ namespace Business.Controllers
 
             var usuario = await _usuarioRepository.GetById(tokenInfo.UsuarioId, "Rol");
 
-            if (usuario == null) {
+            if (usuario == null || usuario.Activo == false || usuario.Eliminado == true)
+            {
                 return null;
             }
 
@@ -58,6 +61,18 @@ namespace Business.Controllers
                 Nombre = usuario.Nombre,
                 UsuarioNombre = usuario.UsuarioNombre
             };
+        }
+
+        public async Task<GetUserInfoResponse?> GetUserInfoByHeader(string? authHeader)
+        {
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+            {
+                return null;
+            }
+
+            string token = authHeader["Bearer ".Length..].Trim();
+            
+            return await GetUserInfoByToken(token);
         }
     }
 }

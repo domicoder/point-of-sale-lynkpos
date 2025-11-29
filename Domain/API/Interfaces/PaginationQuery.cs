@@ -1,5 +1,5 @@
 ﻿
-namespace Domain.Controller
+namespace Domain.API.Interfaces
 {
     public class PaginationQuery
     {

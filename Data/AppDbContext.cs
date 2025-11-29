@@ -9,7 +9,7 @@ namespace Data
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<CajaEstadoModel> CajaEstados { get; set; }
         public DbSet<Caja> Cajas { get; set; }
-        public DbSet<CajaVitacora> CajaVitacoras { get; set; }
+        public DbSet<CajaBitacora> CajaBitacoras { get; set; }
         public DbSet<TipoFacturaModel> TiposFacturas { get; set; }
         public DbSet<EstadoFacturaModel> EstadosFacturas { get; set; }
         public DbSet<Factura> Facturas { get; set; }
@@ -113,9 +113,9 @@ namespace Data
                     .HasDatabaseName("caja_udx_codigo");
             });
 
-            modelBuilder.Entity<CajaVitacora>(entity =>
+            modelBuilder.Entity<CajaBitacora>(entity =>
             {
-                entity.ToTable("caja_vitacora");
+                entity.ToTable("caja_bitacora");
                 entity.HasKey(x => x.Id);
                 entity.Property(x => x.Id);
                 entity.Property(x => x.UsuarioId).IsRequired();
@@ -124,16 +124,16 @@ namespace Data
                 entity.Property(x => x.CreadoEn).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(x => x.Caja)
-                      .WithMany(x => x.CajaVitacoras)
+                      .WithMany(x => x.CajaBitacoras)
                       .HasForeignKey(x => x.CajaId)
                       .OnDelete(DeleteBehavior.Restrict)
-                      .HasConstraintName("caja_vitacora_fk_caja_id");
+                      .HasConstraintName("caja_bitacora_fk_caja_id");
 
                 entity.HasOne(x => x.Usuario)
-                    .WithMany(x => x.CajaVitacoras)
+                    .WithMany(x => x.CajaBitacoras)
                     .HasForeignKey(v => v.UsuarioId)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("caja_vitacora_fk_usuario_id");
+                    .HasConstraintName("caja_bitacora_fk_usuario_id");
             });
 
             modelBuilder.Entity<TipoFacturaModel>(entity =>
@@ -259,8 +259,8 @@ namespace Data
                 entity.Property(x => x.CreadoEn).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(x => x.Factura)
-                      .WithOne(x => x.FacturaDetalle)
-                      .HasForeignKey<FacturaDetalle>(x => x.FacturaId)
+                      .WithMany(x => x.FacturaDetalle)
+                      .HasForeignKey(x => x.FacturaId)
                       .OnDelete(DeleteBehavior.Restrict)
                       .HasConstraintName("facturas_detalles_fk_factura_id");
             });

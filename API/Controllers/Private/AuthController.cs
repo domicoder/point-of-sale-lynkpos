@@ -39,15 +39,7 @@ namespace API.Controllers.Private
         )]
         public async Task<IActionResult> GetInfoUsuario()
         {
-            string? authHeader = Request.Headers.Authorization;
-
-            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
-            {
-                return Unauthorized();
-            }
-
-            string token = authHeader["Bearer ".Length..].Trim();
-            var data = await _authService.GetUserInfoResponse(token);
+            var data = await _authService.GetUserInfoByHeader(Request.Headers.Authorization);
 
             if (data == null) {
                 return Unauthorized();
