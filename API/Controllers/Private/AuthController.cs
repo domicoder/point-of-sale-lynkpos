@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace API.Private.Controllers
+namespace API.Controllers.Private
 {
     [Authorize]
     [ApiController]

@@ -1,12 +1,12 @@
 ﻿using Data.Repositories;
 using Domain.API;
 using Domain.Controller.Private.Caja;
-using Domain.Models; 
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace API.Private.Controllers
+namespace API.Controllers.Private
 {
     [Authorize]
     [Route("api/[controller]/[action]")] 
@@ -58,13 +58,13 @@ namespace API.Private.Controllers
         public async Task<IActionResult> GetList([FromQuery] CajaControllerGetListDto param)
         {
             var pagination = await _cajaRepository.GetAll(
-                filter: (x => !x.Eliminado
+                filter: x => !x.Eliminado
                     && (param.EstadoId == null || x.EstadoId.Equals(param.EstadoId))
                     && (param.Codigo == null || x.Codigo.StartsWith(param.Codigo))
                     && (param.Activo == null || x.Activo == param.Activo)
-                ),
+                ,
                 ["CajaEstado"],
-                selector: (x => new CajaControllerGetListResponse
+                selector: x => new CajaControllerGetListResponse
                 {
                     Id = x.Id,
                     EstadoId = x.EstadoId,
@@ -72,7 +72,7 @@ namespace API.Private.Controllers
                     Codigo = x.Codigo,
                     Estado = x.CajaEstado.Nombre,
                     Activo = x.Activo,
-                }),
+                },
                 orderBy: x => x.CreadoEn,
                 pageArg: param.Page,
                 pageSizeArg: param.PageSize
