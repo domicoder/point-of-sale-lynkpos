@@ -13,6 +13,6 @@ namespace Domain.Models
         public required decimal Subtotal { get; set; }
         public required decimal Impuestos { get; set; }
 
-        public required Factura Factura { get; set; }
+        public Factura? Factura { get; set; }
     }
 }

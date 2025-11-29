@@ -124,7 +124,7 @@ namespace Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Domain.Models.CajaVitacora", b =>
+            modelBuilder.Entity("Domain.Models.CajaBitacora", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -158,15 +158,15 @@ namespace Data.Migrations
                         .HasColumnName("usuario_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_caja_vitacora");
+                        .HasName("pk_caja_bitacora");
 
                     b.HasIndex("CajaId")
-                        .HasDatabaseName("ix_caja_vitacora_caja_id");
+                        .HasDatabaseName("ix_caja_bitacora_caja_id");
 
                     b.HasIndex("UsuarioId")
-                        .HasDatabaseName("ix_caja_vitacora_usuario_id");
+                        .HasDatabaseName("ix_caja_bitacora_usuario_id");
 
-                    b.ToTable("caja_vitacora", (string)null);
+                    b.ToTable("caja_bitacora", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.EstadoFacturaModel", b =>
@@ -529,21 +529,21 @@ namespace Data.Migrations
                     b.Navigation("CajaEstado");
                 });
 
-            modelBuilder.Entity("Domain.Models.CajaVitacora", b =>
+            modelBuilder.Entity("Domain.Models.CajaBitacora", b =>
                 {
                     b.HasOne("Domain.Models.Caja", "Caja")
-                        .WithMany("CajaVitacoras")
+                        .WithMany("CajaBitacoras")
                         .HasForeignKey("CajaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("caja_vitacora_fk_caja_id");
+                        .HasConstraintName("caja_bitacora_fk_caja_id");
 
                     b.HasOne("Domain.Models.Usuario", "Usuario")
-                        .WithMany("CajaVitacoras")
+                        .WithMany("CajaBitacoras")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("caja_vitacora_fk_usuario_id");
+                        .HasConstraintName("caja_bitacora_fk_usuario_id");
 
                     b.Navigation("Caja");
 
@@ -615,7 +615,7 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.Models.Caja", b =>
                 {
-                    b.Navigation("CajaVitacoras");
+                    b.Navigation("CajaBitacoras");
 
                     b.Navigation("Facturas");
                 });
@@ -648,7 +648,7 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.Models.Usuario", b =>
                 {
-                    b.Navigation("CajaVitacoras");
+                    b.Navigation("CajaBitacoras");
 
                     b.Navigation("Facturas");
                 });

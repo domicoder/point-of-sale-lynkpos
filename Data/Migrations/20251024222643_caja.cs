@@ -53,7 +53,7 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "caja_vitacora",
+                name: "caja_bitacora",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -66,15 +66,15 @@ namespace Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_caja_vitacora", x => x.id);
+                    table.PrimaryKey("pk_caja_bitacora", x => x.id);
                     table.ForeignKey(
-                        name: "caja_vitacora_fk_caja_id",
+                        name: "caja_bitacora_fk_caja_id",
                         column: x => x.caja_id,
                         principalTable: "cajas",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "caja_vitacora_fk_usuario_id",
+                        name: "caja_bitacora_fk_usuario_id",
                         column: x => x.usuario_id,
                         principalTable: "usuarios",
                         principalColumn: "id",
@@ -91,13 +91,13 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_caja_vitacora_caja_id",
-                table: "caja_vitacora",
+                name: "ix_caja_bitacora_caja_id",
+                table: "caja_bitacora",
                 column: "caja_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_caja_vitacora_usuario_id",
-                table: "caja_vitacora",
+                name: "ix_caja_bitacora_usuario_id",
+                table: "caja_bitacora",
                 column: "usuario_id");
 
             migrationBuilder.CreateIndex(
@@ -116,7 +116,7 @@ namespace Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "caja_vitacora");
+                name: "caja_bitacora");
 
             migrationBuilder.DropTable(
                 name: "cajas");

@@ -11,7 +11,7 @@ namespace Domain.Models
         public bool Eliminado { get; set; } = false;
 
         public Rol Rol { get; set; } = default!;
-        public ICollection<CajaVitacora> CajaVitacoras { get; set; } = [];
+        public ICollection<CajaBitacora> CajaBitacoras { get; set; } = [];
         public ICollection<Factura> Facturas { get; set; } = [];
     }
 }

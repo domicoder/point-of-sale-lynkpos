@@ -20,5 +20,28 @@ namespace Domain.Models
         {
             return (short)estado;
         }
+
+        public static string GetName(this CajaEstado estado)
+        {
+            return estado.ToString().ToUpperInvariant();
+        }
+
+        public static CajaEstado? FromValue(short value)
+        {
+            return Enum.IsDefined(typeof(CajaEstado), value)
+                ? (CajaEstado)value
+                : null;
+        }
+
+        public static List<EnumModel<short>> GetList()
+        {
+            return [.. Enum.GetValues(typeof(CajaEstado))
+                .Cast<CajaEstado>()
+                .Select(e => new EnumModel<short>
+                {
+                    Id = (short)e,
+                    Nombre = e.GetName()
+                })];
+        }
     }
 }

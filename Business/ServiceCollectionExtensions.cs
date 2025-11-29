@@ -6,7 +6,6 @@ using Domain.Authentication;
 using Domain.Environment;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -79,10 +78,10 @@ namespace Business
             services.AddScoped<AuthService>();
             services.AddScoped<UsuarioRepository>();
             services.AddScoped<CajaRepository>();
-            services.AddScoped<INVENTARIOEventoService>();
-            services.AddScoped<INVENTARIOCategoriaEventoService>();
-            services.AddScoped<INVENTARIOLibroService>();
-            services.AddScoped<INVENTARIOEditorialService>();
+            services.AddScoped<CajaBitacoraRepository>();
+            services.AddScoped<FacturaRepository>();
+            services.AddScoped<FacturaDetalleRepository>();
+            services.AddScoped<InventarioApiProductoService>();
 
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUser, CurrentUser>();

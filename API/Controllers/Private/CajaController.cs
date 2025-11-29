@@ -1,4 +1,5 @@
 ﻿using Data.Repositories;
+using Domain;
 using Domain.API;
 using Domain.Controller.Private.Caja;
 using Domain.Models;
@@ -11,8 +12,29 @@ namespace API.Controllers.Private
     [Authorize]
     [Route("api/[controller]/[action]")] 
     [ApiController]
-    public class CajaController(CajaRepository _cajaRepository, UsuarioRepository _usuarioRepository) : ControllerBase
+    public class CajaController(
+        CajaRepository _cajaRepository,
+        UsuarioRepository _usuarioRepository,
+        CajaBitacoraRepository _cajaBitacoraRepository
+    ) : ControllerBase
     {
+        [HttpGet]
+        [ProducesResponseType<EnumModelResponse<short>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<BadRequestResponse>(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+              Summary = "Obtener lista de estados",
+              Description = "Devuelve una lista de los estados de una caja."
+          )]
+        public IActionResult GetStatusList()
+        {
+            var data = CajaEstadoExtensions.GetList();
+
+            return Ok(new EnumModelResponse<short>()
+            {
+                Data = data,
+            });
+        }
+
         [HttpGet]
         [ProducesResponseType<BaseObjectResponse<CajaControllerGetByIdResponse>>(StatusCodes.Status200OK)]
         [SwaggerOperation(
@@ -254,6 +276,57 @@ namespace API.Controllers.Private
             }
 
             await _cajaRepository.Open(dbUser.Id, dbCaja.Id);
+
+            return Ok(new OkResponse());
+        }
+
+        [HttpPost]
+        [ProducesResponseType<OkResponse>(StatusCodes.Status200OK)]
+        [SwaggerOperation(
+             Summary = "Cerrar una caja por ID",
+             Description = "Cerrar una caja que ha sido abierta impidiendo que se facture hasta que vuelva a abrirse."
+         )]
+        public async Task<IActionResult> Close(Guid id, [FromBody] CajaControllerOpenDto data)
+        {
+            var dbCaja = await _cajaRepository.GetById(id);
+
+            if (dbCaja == null || dbCaja.Activo == false || dbCaja.Eliminado == true)
+            {
+                return BadRequest(new BadRequestResponse
+                {
+                    BadMessage = "La caja no se ha encontrado o se encuentra inactiva."
+                });
+            }
+
+            if (dbCaja.EstadoId == CajaEstado.Cerrado.GetValue())
+            {
+                return BadRequest(new BadRequestResponse
+                {
+                    BadMessage = "La caja se encuentra cerrada."
+                });
+            }
+
+            var dbUser = await _usuarioRepository.GetById(data.UsuarioId);
+
+            if (dbUser == null || dbUser.Activo == false || dbUser.Eliminado == true)
+            {
+                return BadRequest(new BadRequestResponse
+                {
+                    BadMessage = "El usuario no se ha encontrado o se encuentra inactivo."
+                });
+            }
+
+            var dbCajaBitacora = await _cajaBitacoraRepository.GetOneByFilter(x => x.CajaId.Equals(id) && x.UsuarioId.Equals(data.UsuarioId) && x.FechaCierre == null);
+
+            if (dbCajaBitacora == null)
+            {
+                return BadRequest(new BadRequestResponse
+                {
+                    BadMessage = "No existe una vitácora abierta para esta caja o usuario."
+                });
+            }
+
+            await _cajaRepository.Close(dbUser.Id, dbCaja.Id);
 
             return Ok(new OkResponse());
         }

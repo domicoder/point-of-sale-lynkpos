@@ -1,7 +1,7 @@
 ﻿
 namespace Domain.Models
 {
-    public class CajaVitacora : BaseEntity<Guid>
+    public class CajaBitacora : BaseEntity<Guid>
     {
         public required Guid UsuarioId { get; set; }
         public required Guid CajaId { get; set; }

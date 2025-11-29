@@ -13,5 +13,13 @@ namespace Data.Repositories
             );
         }
 
+        public async Task Close(Guid usuarioId, Guid cajaId)
+        {
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC sp_cerrarcaja @usuario_id = {0}, @caja_id = {1}",
+                usuarioId, cajaId
+            );
+        }
+
     }
 }

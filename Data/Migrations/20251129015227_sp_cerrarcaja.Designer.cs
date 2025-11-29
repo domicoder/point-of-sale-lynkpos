@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251129015227_sp_cerrarcaja")]
+    partial class sp_cerrarcaja
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,51 +79,6 @@ namespace Data.Migrations
                     b.ToTable("cajas", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Models.CajaBitacora", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime?>("ActualizadoEn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("actualizado_en");
-
-                    b.Property<Guid>("CajaId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("caja_id");
-
-                    b.Property<DateTime>("CreadoEn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasColumnName("creado_en")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<DateTime>("FechaApertura")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("fecha_apertura");
-
-                    b.Property<DateTime?>("FechaCierre")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("fecha_cierre");
-
-                    b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("usuario_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_caja_bitacora");
-
-                    b.HasIndex("CajaId")
-                        .HasDatabaseName("ix_caja_bitacora_caja_id");
-
-                    b.HasIndex("UsuarioId")
-                        .HasDatabaseName("ix_caja_bitacora_usuario_id");
-
-                    b.ToTable("caja_bitacora", (string)null);
-                });
-
             modelBuilder.Entity("Domain.Models.CajaEstadoModel", b =>
                 {
                     b.Property<short>("Id")
@@ -164,6 +122,51 @@ namespace Data.Migrations
                             CreadoEn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Nombre = "ABIERTO"
                         });
+                });
+
+            modelBuilder.Entity("Domain.Models.CajaBitacora", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime?>("ActualizadoEn")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("actualizado_en");
+
+                    b.Property<Guid>("CajaId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("caja_id");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("creado_en")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime>("FechaApertura")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("fecha_apertura");
+
+                    b.Property<DateTime?>("FechaCierre")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("fecha_cierre");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("usuario_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_caja_bitacora");
+
+                    b.HasIndex("CajaId")
+                        .HasDatabaseName("ix_caja_bitacora_caja_id");
+
+                    b.HasIndex("UsuarioId")
+                        .HasDatabaseName("ix_caja_bitacora_usuario_id");
+
+                    b.ToTable("caja_bitacora", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.EstadoFacturaModel", b =>
@@ -347,6 +350,7 @@ namespace Data.Migrations
                         .HasName("pk_facturas_detalles");
 
                     b.HasIndex("FacturaId")
+                        .IsUnique()
                         .HasDatabaseName("ix_facturas_detalles_factura_id");
 
                     b.ToTable("facturas_detalles", (string)null);
@@ -588,8 +592,8 @@ namespace Data.Migrations
             modelBuilder.Entity("Domain.Models.FacturaDetalle", b =>
                 {
                     b.HasOne("Domain.Models.Factura", "Factura")
-                        .WithMany("FacturaDetalle")
-                        .HasForeignKey("FacturaId")
+                        .WithOne("FacturaDetalle")
+                        .HasForeignKey("Domain.Models.FacturaDetalle", "FacturaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("facturas_detalles_fk_factura_id");
@@ -628,7 +632,8 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.Models.Factura", b =>
                 {
-                    b.Navigation("FacturaDetalle");
+                    b.Navigation("FacturaDetalle")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Models.Rol", b =>

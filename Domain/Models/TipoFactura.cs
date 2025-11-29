@@ -19,5 +19,28 @@ namespace Domain.Models
         {
             return (short)tipoFactura;
         }
+
+        public static string GetName(this TipoFactura tipoFactura)
+        {
+            return tipoFactura.ToString().ToUpperInvariant();
+        }
+
+        public static TipoFactura? FromValue(short value)
+        {
+            return Enum.IsDefined(typeof(TipoFactura), value)
+                ? (TipoFactura)value
+                : null;
+        }
+
+        public static List<EnumModel<short>> GetList()
+        {
+            return [.. Enum.GetValues(typeof(TipoFactura))
+                .Cast<TipoFactura>()
+                .Select(e => new EnumModel<short>
+                {
+                    Id = (short)e,
+                    Nombre = e.GetName()
+                })];
+        }
     }
 }
