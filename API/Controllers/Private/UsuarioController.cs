@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace API.Private.Controllers
+namespace API.Controllers.Private
 {
     [Authorize]
     [Route("api/[controller]/[action]")]
@@ -59,17 +59,17 @@ namespace API.Private.Controllers
             try
             {
                 var pagination = await _usuarioRepository.GetAll(
-                    filter: (x => !x.Eliminado
+                    filter: x => !x.Eliminado
                         && (param.UsuarioNombre == null || x.UsuarioNombre.StartsWith(param.UsuarioNombre))
                         && (param.Activo == null || x.Activo == param.Activo)
-                    ),
-                    selector: (x => new UsuarioControllerGetListResponse
+                    ,
+                    selector: x => new UsuarioControllerGetListResponse
                     {
                         Id = x.Id,
                         Nombre = x.Nombre,
                         UsuarioNombre = x.UsuarioNombre,
                         Activo = x.Activo,
-                    }),
+                    },
                     orderBy: x => x.CreadoEn,
                     pageArg: param.Page,
                     pageSizeArg: param.PageSize
