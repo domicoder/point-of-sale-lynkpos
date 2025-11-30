@@ -131,7 +131,7 @@ catch (Exception ex)
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
 {
     app.UseSwagger();
     app.UseSwaggerUI(opt =>
@@ -144,8 +144,11 @@ if (app.Environment.IsDevelopment())
 // CORS must be enabled before UseHttpsRedirection and UseAuthorization
 app.UseCors("AllowLocalHostOrigin");
 
-app.UseHttpsRedirection();
-
+// Only redirect in non-Docker environments
+if (!app.Environment.IsEnvironment("Docker"))
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthorization();
 
 app.MapControllers();

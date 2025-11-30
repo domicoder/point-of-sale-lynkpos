@@ -1,4 +1,4 @@
-name: punto-venta-api
+name: punto-venta-api-forked
 
 services:
     sqlserver:
@@ -8,7 +8,7 @@ services:
             MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD}
             MSSQL_PID: 'Developer'
         ports:
-            - '11433:1433'
+            - '11434:1433'
         env_file:
             - .env
         volumes:

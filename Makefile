@@ -7,6 +7,10 @@
 # make db-sync
 # make run
 
+# Create .env file
+make env:
+	cp .env.example .env
+
 # Start using docker
 up:
 	docker compose up -d
@@ -18,9 +22,13 @@ db-sync:
 run:
 	dotnet run --project API
 
-# Down the project
-down:
-	docker compose down -v
-
 stop:
 	docker compose stop
+
+# Remove all containers
+remove:
+	docker compose down -v
+
+# Remove all containers and volumes
+remove-all:
+	docker compose down -v --remove-orphans --rmi all
