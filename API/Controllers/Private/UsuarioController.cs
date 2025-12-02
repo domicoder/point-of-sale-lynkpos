@@ -132,7 +132,7 @@ namespace API.Controllers.Private
                 return Ok(new OkResponse());
             }
 
-            var dbUsuarioByUsuarioNombre = await _usuarioRepository.GetOneByFilter(x => x.UsuarioNombre.Equals(data.UsuarioNombre) && !x.Eliminado);
+            var dbUsuarioByUsuarioNombre = await _usuarioRepository.GetOneByFilter(x => x.UsuarioNombre.Equals(data.UsuarioNombre) && !x.Eliminado && x.Id != id);
 
             if (dbUsuarioByUsuarioNombre != null && dbUsuarioByUsuarioNombre.Id.Equals(id))
             {

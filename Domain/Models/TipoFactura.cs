@@ -12,7 +12,7 @@ namespace Domain.Models
         Debito = 1,
         Credito = 2
     }
-
+    
     public static class TipoFacturaExtensions
     {
         public static short GetValue(this TipoFactura tipoFactura)

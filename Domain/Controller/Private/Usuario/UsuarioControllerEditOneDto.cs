@@ -3,9 +3,9 @@ namespace Domain.Controller.Private.Usuario
 {
     public class UsuarioControllerEditOneDto
     {
-        public string? Nombre { get; set; }
-        public string? UsuarioNombre { get; set; }
-        public string? Password { get; set; }
-        public bool? Activo { get; set; }
+        public string? Nombre { get; set; } = null;
+        public string? UsuarioNombre { get; set; } = null;
+        public string? Password { get; set; } = null;
+        public bool? Activo { get; set; } = null;
     }
 }
