@@ -3,6 +3,7 @@ using Business.Services.INVENTARIO_API;
 using Data.Repositories;
 using Domain.API;
 using Domain.Controller.Private.Facturacion;
+using Domain.Controller.Private.Usuario;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -178,7 +179,7 @@ namespace API.Controllers.Private
         }
 
         [HttpPost]
-        [ProducesResponseType<OkResponse>(StatusCodes.Status200OK)]
+        [ProducesResponseType<FacturacionControllerAddInvoiceResponse>(StatusCodes.Status200OK)]
         [ProducesResponseType<BadRequestResponse>(StatusCodes.Status400BadRequest)]
         [SwaggerOperation(
             Summary = "Facturar",
@@ -287,7 +288,10 @@ namespace API.Controllers.Private
             await _facturaRepository.Create(factura);
             await _facturaDetalleRepository.CreateMultiple(facturaDetalles);
 
-            return Ok(new OkResponse());
+            return Ok(new
+            {
+                Id = facturaId
+            });
         }
     }
 }
