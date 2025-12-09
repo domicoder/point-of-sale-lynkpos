@@ -1,0 +1,14 @@
+ [variables]
+ DOTNET_CLI_TELEMETRY_OPTOUT = "true"
+ 
+ [phases.setup]
+ nixPkgs = ["dotnet-sdk_8"]
+ 
+ [phases.build]
+ cmds = [
+   "dotnet restore",
+   "dotnet publish API/API.csproj -c Release -o /app/publish"
+ ]
+ 
+ [start]
+ cmd = "dotnet /app/publish/API.dll"
