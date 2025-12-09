@@ -5,6 +5,7 @@ using Business.Authentication;
 using Data;
 using Data.Repositories;
 using Domain.Authentication;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -152,5 +153,32 @@ if (!app.Environment.IsEnvironment("Docker"))
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Aplicar migraciones automáticamente al iniciar (solo en producción o cuando AUTO_MIGRATE=true)
+var autoMigrate = builder.Configuration.GetValue<bool>("AUTO_MIGRATE", defaultValue: false);
+var isProduction = app.Environment.IsProduction() || app.Environment.IsStaging();
+
+if (autoMigrate || isProduction)
+{
+    try
+    {
+        app.Logger.LogInformation("Iniciando aplicación de migraciones automáticas...");
+        
+        using var scope = app.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<Data.AppDbContext>();
+        dbContext.MigrateDatabase(app.Logger);
+        
+        app.Logger.LogInformation("Migraciones aplicadas exitosamente.");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Error crítico al aplicar migraciones. La aplicación puede no funcionar correctamente.");
+        // En producción, es mejor fallar rápido si las migraciones no se pueden aplicar
+        if (isProduction)
+        {
+            throw;
+        }
+    }
+}
 
 app.Run();

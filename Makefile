@@ -22,6 +22,9 @@ db-sync:
 run:
 	dotnet run --project API
 
+run-tests:
+	dotnet test Business.Tests 2>&1
+
 stop:
 	docker compose stop
 

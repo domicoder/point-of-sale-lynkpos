@@ -11,6 +11,7 @@
   COPY Business/*.csproj Business/
   COPY Data/*.csproj Data/
   COPY Domain/*.csproj Domain/
+  COPY Business.Tests/*.csproj Business.Tests/
   
   RUN dotnet restore
   

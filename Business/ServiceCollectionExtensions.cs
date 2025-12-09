@@ -1,11 +1,13 @@
-﻿using Business.Authentication;
+using Business.Authentication;
 using Business.Controllers;
 using Business.Services.INVENTARIO_API;
+using Business.Services.Printing;
 using Data.Repositories;
 using Domain.Authentication;
 using Domain.Environment;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -59,7 +61,7 @@ namespace Business
                 .Validate(x => !string.IsNullOrWhiteSpace(x.Credential.Password), "INVENTARIO_API:Credential:Password is required")
                 .ValidateOnStart();
 
-            services.AddHttpClient<INVENTARIOApiService>((serviceProvider, httpClient) =>
+            services.AddHttpClient<InventarioApiProductoService>((serviceProvider, httpClient) =>
             {
                 var inventarioSetting = serviceProvider.GetRequiredService<IOptions<InventarioApiSetting>>().Value;
                 
@@ -82,6 +84,10 @@ namespace Business
             services.AddScoped<FacturaRepository>();
             services.AddScoped<FacturaDetalleRepository>();
             services.AddScoped<InventarioApiProductoService>();
+
+            // Configuración y servicio de impresión ESC/POS
+            services.Configure<EscPosPrinterOptions>(configuration.GetSection("EscPosPrinter"));
+            services.AddScoped<IReceiptPrinterService, EscPosReceiptPrinterService>();
 
             services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUser, CurrentUser>();
