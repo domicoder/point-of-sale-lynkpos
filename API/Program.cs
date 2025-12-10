@@ -35,6 +35,20 @@ builder.Services.AddDataServices(builder.Configuration);
 builder.Services.AddBusinessServices(builder.Configuration);
 builder.Services.AddScoped<CajaRepository>();
 
+var allowedOriginsFromConfig = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
+// Default list in case env/config is missing. Keep it lean to avoid surprises.
+var allowedOrigins = allowedOriginsFromConfig.Length > 0
+    ? allowedOriginsFromConfig
+    : new[]
+    {
+        "https://lynkpos.app",
+        "https://www.lynkpos.app",
+        "https://lynkpos-frontend.vercel.app"
+    };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalHostOrigin", policy =>
@@ -53,11 +67,8 @@ builder.Services.AddCors(options =>
                 if (host == "localhost" || host == "127.0.0.1")
                     return true;
 
-                var domainFrontend = "https://lynkpos.app";
-                var vercelDomainFrontend = "https://lynkpos-frontend.vercel.app";
-
-                // Allow specific production origin
-                if (origin == domainFrontend || origin == vercelDomainFrontend)
+                // Allow configured origins (exact match)
+                if (allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
                     return true;
                 
                 return false;
