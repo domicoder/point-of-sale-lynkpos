@@ -1,4 +1,4 @@
-﻿using Business.Utils;
+using Business.Utils;
 using Data.Repositories;
 using Domain.API;
 using Domain.Authentication;
@@ -150,11 +150,6 @@ namespace API.Controllers.Private
             dbUsuario.Nombre = data.Nombre ?? dbUsuario.Nombre;
             dbUsuario.UsuarioNombre = data.UsuarioNombre ?? dbUsuario.UsuarioNombre;
             dbUsuario.Activo = data.Activo ?? dbUsuario.Activo;
-
-            if (dbUsuario.Id.Equals(id))
-            {
-                dbUsuario.Activo = true;
-            }
 
             await _usuarioRepository.Edit(dbUsuario);
 
