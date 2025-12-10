@@ -1,4 +1,5 @@
-﻿using Data.Repositories;
+using Data.Repositories;
+using Microsoft.Data.SqlClient;
 using Domain;
 using Domain.API;
 using Domain.Controller.Private.Caja;
@@ -288,47 +289,59 @@ namespace API.Controllers.Private
          )]
         public async Task<IActionResult> Close(Guid id, [FromBody] CajaControllerOpenDto data)
         {
-            var dbCaja = await _cajaRepository.GetById(id);
-
-            if (dbCaja == null || dbCaja.Activo == false || dbCaja.Eliminado == true)
+            try
             {
-                return BadRequest(new BadRequestResponse
-                {
-                    BadMessage = "La caja no se ha encontrado o se encuentra inactiva."
-                });
-            }
+                var dbCaja = await _cajaRepository.GetById(id);
 
-            if (dbCaja.EstadoId == CajaEstado.Cerrado.GetValue())
+                if (dbCaja == null || dbCaja.Activo == false || dbCaja.Eliminado == true)
+                {
+                    return BadRequest(new BadRequestResponse
+                    {
+                        BadMessage = "La caja no se ha encontrado o se encuentra inactiva."
+                    });
+                }
+
+                if (dbCaja.EstadoId == CajaEstado.Cerrado.GetValue())
+                {
+                    return BadRequest(new BadRequestResponse
+                    {
+                        BadMessage = "La caja se encuentra cerrada."
+                    });
+                }
+
+                var dbUser = await _usuarioRepository.GetById(data.UsuarioId);
+
+                if (dbUser == null || dbUser.Activo == false || dbUser.Eliminado == true)
+                {
+                    return BadRequest(new BadRequestResponse
+                    {
+                        BadMessage = "El usuario no se ha encontrado o se encuentra inactivo."
+                    });
+                }
+
+                var dbCajaBitacora = await _cajaBitacoraRepository.GetOneByFilter(x => x.CajaId.Equals(id) && x.UsuarioId.Equals(data.UsuarioId) && x.FechaCierre == null);
+
+                if (dbCajaBitacora == null)
+                {
+                    return BadRequest(new BadRequestResponse
+                    {
+                        BadMessage = "No existe una vitácora abierta para esta caja o usuario."
+                    });
+                }
+
+                await _cajaRepository.Close(dbUser.Id, dbCaja.Id);
+
+                return Ok(new OkResponse());
+            }
+            catch (SqlException ex)
             {
-                return BadRequest(new BadRequestResponse
-                {
-                    BadMessage = "La caja se encuentra cerrada."
-                });
+                // The stored procedure uses THROW with custom messages; surface as 400 to avoid generic 500s.
+                return BadRequest(new BadRequestResponse { BadMessage = ex.Message });
             }
-
-            var dbUser = await _usuarioRepository.GetById(data.UsuarioId);
-
-            if (dbUser == null || dbUser.Activo == false || dbUser.Eliminado == true)
+            catch (Exception ex)
             {
-                return BadRequest(new BadRequestResponse
-                {
-                    BadMessage = "El usuario no se ha encontrado o se encuentra inactivo."
-                });
+                return StatusCode(500, new BadRequestResponse { BadMessage = $"Ocurrió un error interno: {ex.Message}" });
             }
-
-            var dbCajaBitacora = await _cajaBitacoraRepository.GetOneByFilter(x => x.CajaId.Equals(id) && x.UsuarioId.Equals(data.UsuarioId) && x.FechaCierre == null);
-
-            if (dbCajaBitacora == null)
-            {
-                return BadRequest(new BadRequestResponse
-                {
-                    BadMessage = "No existe una vitácora abierta para esta caja o usuario."
-                });
-            }
-
-            await _cajaRepository.Close(dbUser.Id, dbCaja.Id);
-
-            return Ok(new OkResponse());
         }
     }
 }
