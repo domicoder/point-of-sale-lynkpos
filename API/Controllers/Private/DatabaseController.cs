@@ -135,6 +135,85 @@ namespace API.Controllers.Private
         }
 
         /// <summary>
+        /// Aplica migraciones pendientes manualmente
+        /// </summary>
+        [HttpPost("migrations/apply")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(
+            Summary = "Aplicar migraciones manualmente",
+            Description = "Aplica todas las migraciones pendientes a la base de datos. Requiere autenticación."
+        )]
+        public async Task<IActionResult> ApplyMigrations()
+        {
+            try
+            {
+                _logger.LogInformation("Iniciando aplicación manual de migraciones...");
+
+                var canConnect = await _dbContext.Database.CanConnectAsync();
+                if (!canConnect)
+                {
+                    return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                    {
+                        Success = false,
+                        Message = "No se puede conectar a la base de datos",
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
+
+                var pendingMigrations = await _dbContext.Database.GetPendingMigrationsAsync();
+                var pendingList = pendingMigrations.ToArray();
+
+                if (!pendingList.Any())
+                {
+                    return Ok(new
+                    {
+                        Success = true,
+                        Message = "No hay migraciones pendientes. La base de datos está actualizada.",
+                        AppliedMigrations = Array.Empty<string>(),
+                        PendingCount = 0,
+                        Timestamp = DateTime.UtcNow
+                    });
+                }
+
+                _logger.LogWarning(
+                    "Aplicando {Count} migraciones pendientes: {Migrations}",
+                    pendingList.Length,
+                    string.Join(", ", pendingList));
+
+                await _dbContext.Database.MigrateAsync();
+
+                var appliedMigrations = await _dbContext.Database.GetAppliedMigrationsAsync();
+
+                _logger.LogInformation(
+                    "Migraciones aplicadas exitosamente. Total aplicadas: {Count}",
+                    pendingList.Length);
+
+                return Ok(new
+                {
+                    Success = true,
+                    Message = $"Migraciones aplicadas exitosamente. Total: {pendingList.Length}",
+                    AppliedMigrations = pendingList,
+                    TotalAppliedMigrations = appliedMigrations.ToArray(),
+                    AppliedCount = pendingList.Length,
+                    Timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al aplicar migraciones manualmente");
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Success = false,
+                    Error = "Error al aplicar migraciones",
+                    Message = ex.Message,
+                    Timestamp = DateTime.UtcNow
+                });
+            }
+        }
+
+        /// <summary>
         /// Verifica la conexión a la base de datos
         /// </summary>
         [HttpGet("health")]
