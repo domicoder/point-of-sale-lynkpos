@@ -161,6 +161,32 @@ dotnet ef database update --project Data/Data.csproj --startup-project API/API.c
 2. Agrega la IP de Railway (puede cambiar)
 3. O mejor: Habilita "Allow Azure services and resources to access this server"
 
+### Error: "Can not connect to the database in its current state" (Error 40925)
+
+**Causa**: La base de datos de Azure SQL está en un estado que no permite conexiones. Esto ocurre comúnmente cuando:
+
+-   La base de datos está **pausada** (si usas el tier Serverless)
+-   La base de datos está en proceso de **escalado** (cambio de tier)
+-   La base de datos está en un estado transitorio
+
+**Solución**:
+
+1. **Si usas Serverless**: La base de datos se pausa automáticamente después de inactividad. La aplicación ahora tiene lógica de reintentos que esperará hasta 5 intentos (con backoff exponencial) para que la base de datos se reactive automáticamente.
+
+2. **Verifica en Azure Portal**:
+
+    - Ve a Azure Portal → SQL Database
+    - Verifica que el estado sea "Online" (no "Paused")
+    - Si está pausada, haz clic en "Resume" para reactivarla
+
+3. **Si está escalando**: Espera a que termine el proceso de escalado (puede tomar varios minutos)
+
+4. **Para evitar pausas automáticas** (Serverless):
+    - Considera cambiar a un tier provisionado (Basic, S0, etc.) si necesitas disponibilidad constante
+    - O configura un job que mantenga la base de datos activa
+
+**Nota**: La aplicación ahora maneja este error automáticamente con reintentos. Si después de 5 intentos (aproximadamente 75 segundos) la base de datos sigue no disponible, la aplicación fallará con un mensaje claro indicando que debes verificar el estado en Azure Portal.
+
 ### Verificar Estado de Migraciones
 
 Puedes crear un endpoint temporal para verificar:

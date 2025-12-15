@@ -173,6 +173,24 @@ if (autoMigrate || isProduction)
         
         app.Logger.LogInformation("Migraciones aplicadas exitosamente.");
     }
+    catch (InvalidOperationException ex) when (ex.Message.Contains("base de datos está en un estado que no permite conexiones"))
+    {
+        // Error específico de Azure SQL Database no disponible (pausada, escalando, etc.)
+        app.Logger.LogCritical(ex, 
+            "ERROR CRÍTICO: La base de datos de Azure SQL no está disponible. " +
+            "Esto puede ocurrir si la base de datos está pausada (serverless) o en proceso de escalado. " +
+            "Verifica en Azure Portal el estado de la base de datos.");
+        
+        if (isProduction)
+        {
+            app.Logger.LogCritical("FALLANDO la aplicación debido a base de datos no disponible (modo producción)");
+            throw;
+        }
+        else
+        {
+            app.Logger.LogWarning("Continuando sin aplicar migraciones (modo no-producción). La aplicación puede no funcionar correctamente.");
+        }
+    }
     catch (Exception ex)
     {
         app.Logger.LogError(ex, "Error crítico al aplicar migraciones. La aplicación puede no funcionar correctamente.");
