@@ -78,6 +78,63 @@ namespace API.Controllers.Private
         }
 
         /// <summary>
+        /// Obtiene información sobre el estado de las migraciones (público, sin autenticación)
+        /// Útil para debugging en producción
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("migrations/status/public")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [SwaggerOperation(
+            Summary = "Estado de migraciones (público)",
+            Description = "Devuelve información sobre las migraciones aplicadas y pendientes. No requiere autenticación."
+        )]
+        public async Task<IActionResult> GetMigrationsStatusPublic()
+        {
+            try
+            {
+                var canConnect = await _dbContext.Database.CanConnectAsync();
+                
+                if (!canConnect)
+                {
+                    return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                    {
+                        CanConnect = false,
+                        Message = "No se puede conectar a la base de datos",
+                        AppliedMigrations = Array.Empty<string>(),
+                        PendingMigrations = Array.Empty<string>()
+                    });
+                }
+
+                var appliedMigrations = await _dbContext.Database.GetAppliedMigrationsAsync();
+                var pendingMigrations = await _dbContext.Database.GetPendingMigrationsAsync();
+                var allMigrations = _dbContext.Database.GetMigrations();
+
+                return Ok(new
+                {
+                    CanConnect = true,
+                    AppliedMigrations = appliedMigrations.ToArray(),
+                    PendingMigrations = pendingMigrations.ToArray(),
+                    AllMigrations = allMigrations.ToArray(),
+                    IsUpToDate = !pendingMigrations.Any(),
+                    AppliedCount = appliedMigrations.Count(),
+                    PendingCount = pendingMigrations.Count(),
+                    TotalCount = allMigrations.Count(),
+                    Timestamp = DateTime.UtcNow
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener estado de migraciones");
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Error = "Error al obtener información de migraciones",
+                    Message = ex.Message,
+                    Timestamp = DateTime.UtcNow
+                });
+            }
+        }
+
+        /// <summary>
         /// Verifica la conexión a la base de datos
         /// </summary>
         [HttpGet("health")]
